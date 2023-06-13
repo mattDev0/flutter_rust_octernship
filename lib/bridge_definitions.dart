@@ -16,6 +16,10 @@ abstract class Native {
   Future<bool> rustReleaseMode({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRustReleaseModeConstMeta;
+
+  Future<List<String>> lsWithPolkit({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kLsWithPolkitConstMeta;
 }
 
 enum Platform {

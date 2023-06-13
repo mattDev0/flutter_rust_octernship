@@ -118,3 +118,19 @@ impl LsRootMethod for SudoLsMethod {
         Err(anyhow!("Password required"))
     }
 }
+
+// with pollkit method
+pub fn ls_with_polkit() -> Result<Vec<String>> {
+    // create a vector of methods
+    let methods: Vec<Box<dyn LsRootMethod>> = vec![Box::new(PkexecLsMethod)];
+
+    // try to execute each method and return the result if successful
+    for method in methods {
+        match method.execute() {
+            Ok(result) => return Ok(result),
+            Err(_) => continue,
+        };
+    }
+
+    Err(anyhow!("Failed to elevate privileges with polkit."))
+}

@@ -58,10 +58,34 @@ class NativeImpl implements Native {
         argNames: [],
       );
 
+  Future<List<String>> lsWithPolkit({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_ls_with_polkit(port_),
+      parseSuccessData: _wire2api_StringList,
+      constMeta: kLsWithPolkitConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kLsWithPolkitConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "ls_with_polkit",
+        argNames: [],
+      );
+
   void dispose() {
     _platform.dispose();
   }
 // Section: wire2api
+
+  String _wire2api_String(dynamic raw) {
+    return raw as String;
+  }
+
+  List<String> _wire2api_StringList(dynamic raw) {
+    return (raw as List<dynamic>).cast<String>();
+  }
 
   bool _wire2api_bool(dynamic raw) {
     return raw as bool;
@@ -73,6 +97,14 @@ class NativeImpl implements Native {
 
   Platform _wire2api_platform(dynamic raw) {
     return Platform.values[raw as int];
+  }
+
+  int _wire2api_u8(dynamic raw) {
+    return raw as int;
+  }
+
+  Uint8List _wire2api_uint_8_list(dynamic raw) {
+    return raw as Uint8List;
   }
 }
 
@@ -213,6 +245,20 @@ class NativeWire implements FlutterRustBridgeWireBase {
           'wire_rust_release_mode');
   late final _wire_rust_release_mode =
       _wire_rust_release_modePtr.asFunction<void Function(int)>();
+
+  void wire_ls_with_polkit(
+    int port_,
+  ) {
+    return _wire_ls_with_polkit(
+      port_,
+    );
+  }
+
+  late final _wire_ls_with_polkitPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_ls_with_polkit');
+  late final _wire_ls_with_polkit =
+      _wire_ls_with_polkitPtr.asFunction<void Function(int)>();
 
   void free_WireSyncReturn(
     WireSyncReturn ptr,

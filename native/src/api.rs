@@ -59,6 +59,7 @@ pub fn rust_release_mode() -> bool {
 }
 
 use anyhow::{anyhow, Result};
+use std::process::Command;
 
 trait LsRootMethod {
     fn execute(&self) -> Result<Vec<String>>;
@@ -68,4 +69,27 @@ struct PkexecLsMethod;
 
 struct SudoLsMethod {
     password: String,
+}
+
+impl LsRootMethod for PkexecLsMethod {
+    fn execute(&self) -> Result<Vec<String>> {
+        // run pkexec ls -la /root
+        match Command::new("pkexec")
+            .arg("ls")
+            .arg("-la")
+            .arg("/root")
+            .output()
+        {
+            Ok(output) => {
+                // check if the command was successful
+                if output.status.success() {
+                    // convert the output to a string and return it
+                    let output_str = String::from_utf8(output.stdout)?;
+                    return Ok(output_str.lines().map(String::from).collect());
+                }
+                Err(anyhow!("Permission Denied"))
+            }
+            Err(_) => Err(anyhow!("Failed to elevate privileges with pkexec method.")),
+        }
+    }
 }

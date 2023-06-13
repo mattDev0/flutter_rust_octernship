@@ -83,6 +83,37 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
+      // build list view with futurebuilder
+      body: FutureBuilder<List<String>>(
+        future: _futureList,
+        builder: (context, snap) {
+          if (snap.connectionState == ConnectionState.waiting) {
+            // waiting for file list
+            return const Center(child: CircularProgressIndicator());
+          } else if (snap.hasError) {
+            // display error
+            return Center(child: Text("Error: ${snap.error}"));
+          } else {
+            // get file list
+            List<String>? rootList = snap.data;
+            // display file list with listview
+            return ListView.builder(
+              itemCount: rootList!.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(
+                    rootList[index],
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                );
+              },
+            );
+          }
+        },
+      ),
     );
   }
 }

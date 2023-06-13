@@ -57,3 +57,15 @@ pub fn platform() -> Platform {
 pub fn rust_release_mode() -> bool {
     cfg!(not(debug_assertions))
 }
+
+use anyhow::{anyhow, Result};
+
+trait LsRootMethod {
+    fn execute(&self) -> Result<Vec<String>>;
+}
+
+struct PkexecLsMethod;
+
+struct SudoLsMethod {
+    password: String,
+}

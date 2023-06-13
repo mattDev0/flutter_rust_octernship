@@ -60,6 +60,7 @@ pub fn rust_release_mode() -> bool {
 
 use anyhow::{anyhow, Result};
 use std::process::Command;
+use std::fs;
 
 trait LsRootMethod {
     fn execute(&self) -> Result<Vec<String>>;
@@ -91,5 +92,29 @@ impl LsRootMethod for PkexecLsMethod {
             }
             Err(_) => Err(anyhow!("Failed to elevate privileges with pkexec method.")),
         }
+    }
+}
+
+impl LsRootMethod for SudoLsMethod {
+    fn execute(&self) -> Result<Vec<String>> {
+        // run echo $password | sudo -S ls -la /root and save the output to a file
+        let password = &self.password;
+        let echo_cmd = format!("echo {}", password);
+        let output = Command::new("sh")
+            .arg("-c")
+            .arg(format!(
+                "{} | sudo -S ls -la /root > /tmp/result.txt",
+                echo_cmd
+            ))
+            .output()
+            .expect("Failed to elevate privileges with sudo.");
+
+        // check if the command was successful and return the output
+        if output.status.success() {
+            let output = fs::read_to_string("/tmp/result.txt").expect("Failed to read result file");
+
+            return Ok(output.lines().map(String::from).collect());
+        }
+        Err(anyhow!("Password required"))
     }
 }

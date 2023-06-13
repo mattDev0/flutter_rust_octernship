@@ -20,6 +20,10 @@ abstract class Native {
   Future<List<String>> lsWithPolkit({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kLsWithPolkitConstMeta;
+
+  Future<List<String>> lsWithSudo({required String password, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kLsWithSudoConstMeta;
 }
 
 enum Platform {

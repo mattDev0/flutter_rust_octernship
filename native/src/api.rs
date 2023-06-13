@@ -134,3 +134,12 @@ pub fn ls_with_polkit() -> Result<Vec<String>> {
 
     Err(anyhow!("Failed to elevate privileges with polkit."))
 }
+
+// with sudo and password method
+pub fn ls_with_sudo(password: String) -> Result<Vec<String>> {
+    // create a vector of methods and add the sudo method
+    let method = SudoLsMethod { password };
+    method
+        .execute()
+        .map_err(|_| anyhow!("Failed to elevate privileges with sudo."))
+}
